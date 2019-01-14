@@ -3,7 +3,8 @@
 
 #include "utttbot.h"
 
-int main() {
+int main() 
+{
 	UTTTBot bot;
 	bot.run();
 	

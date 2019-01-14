@@ -6,10 +6,10 @@
 
 #include <string>
 #include <vector>
-
 #include "uttt.h"
 
-class UTTTBot {
+class UTTTBot 
+{
 	int timebank;
 	int time_per_move;
 	std::string player_names[2];

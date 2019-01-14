@@ -3,29 +3,45 @@
 
 #include "uttt.h"
 
-std::ostream &operator<<(std::ostream& os, const Player &p) {
-	if (p == Player::None) {
+std::ostream &operator<<(std::ostream& os, const Player &p) 
+{
+	if (p == Player::None) 
+	{
 		os << ".";
-	} else if (p == Player::X) {
+	} 
+	
+	else if (p == Player::X) 
+	{
 		os << "X";
-	} else if (p == Player::O) {
+	} 
+	
+	else if (p == Player::O) 
+	{
 		os << "O";
-	} else if (p == Player::Active) {
+	} 
+	
+	else if (p == Player::Active) 
+	{
 		os << "*";
 	}
 	return os;
 }
 
-std::ostream &operator<<(std::ostream& os, const State &s) {
-	for (int r=0; r<9; r++) {
-		for (int c=0; c<9; c++) {
+std::ostream &operator<<(std::ostream& os, const State &s) 
+{
+	for (int r=0; r<9; r++) 
+	{
+		for (int c=0; c<9; c++) 
+		{
 			os << s.board[r][c];
 		}
 		os << std::endl;
 	}
 	os << std::endl;
-	for (int r=0; r<3; r++) {
-		for (int c=0; c<3; c++) {
+	for (int r=0; r<3; r++) 
+	{
+		for (int c=0; c<3; c++) 
+		{
 			os << s.macroboard[r][c];
 		}
 		os << std::endl;
@@ -33,7 +49,8 @@ std::ostream &operator<<(std::ostream& os, const State &s) {
 	return os;
 }
 
-std::ostream &operator<<(std::ostream& os, const Move &m) {
+std::ostream &operator<<(std::ostream& os, const Move &m) 
+{
 	os << m.x << " " << m.y;
 	return os;
 }
@@ -42,8 +59,10 @@ Player getCurrentPlayer(const State &state)
 {
 	int countX = 0;
 	int countO = 0;
-	for (int r=0; r<9; r++) {
-		for (int c=0; c<9; c++) {
+	for (int r=0; r<9; r++) 
+	{
+		for (int c=0; c<9; c++) 
+		{
 			if (state.board[r][c] == Player::X) countX++;
 			else if (state.board[r][c] == Player::O) countO++;
 		}
@@ -82,13 +101,16 @@ State doMove(const State &state, const Move &m)
 {
 	State result = state;
 
-	if (state.macroboard[m.y/3][m.x/3] != Player::Active) {
+	if (state.macroboard[m.y/3][m.x/3] != Player::Active) 
+	{
 		return result; // Invalid move
 	}
 
 	result.board[m.y][m.x] = getCurrentPlayer(state);
-	for (int r=0; r<3; r++) {
-		for (int c=0; c<3; c++) {
+	for (int r=0; r<3; r++) 
+	{
+		for (int c=0; c<3; c++) 
+		{
 			result.macroboard[r][c] = getWinner(result, r, c);
 		}
 	}
@@ -134,10 +156,14 @@ Player getWinner(const State &state)
 std::vector<Move> getMoves(const State &state)
 {
 	std::vector<Move> moves;
-	if (getWinner(state) == Player::None) {
-		for (int r=0; r<9; r++) {
-			for (int c=0; c<9; c++) {
-				if (state.macroboard[r/3][c/3] == Player::Active && state.board[r][c] == Player::None) {
+	if (getWinner(state) == Player::None) 
+	{
+		for (int r=0; r<9; r++) 
+		{
+			for (int c=0; c<9; c++)
+			{
+				if (state.macroboard[r/3][c/3] == Player::Active && state.board[r][c] == Player::None)
+				{
 					moves.push_back(Move{c,r});
 				}
 			}

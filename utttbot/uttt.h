@@ -13,11 +13,13 @@
 
 enum class Player { None, X, O, Active };
 struct Move { int x, y; };
-struct State {
+struct State 
+{
 	std::array<std::array<Player,9>,9> board;
 	std::array<std::array<Player,3>,3> macroboard;
 
-	State() {
+	State() 
+	{
 		for (int r=0; r<9; r++)
 			for (int c=0; c<9; c++)
 				board[r][c] = Player::None;
@@ -29,14 +31,16 @@ struct State {
 
 // used to get a random element from a container
 template<typename Iter, typename RandomGenerator>
-Iter select_randomly(Iter start, Iter end, RandomGenerator& g) {
+Iter select_randomly(Iter start, Iter end, RandomGenerator& g) 
+{
     std::uniform_int_distribution<> dis(0, std::distance(start, end) - 1);
     std::advance(start, dis(g));
     return start;
 }
 
 template<typename Iter>
-Iter select_randomly(Iter start, Iter end) {
+Iter select_randomly(Iter start, Iter end)
+{
     static std::random_device rd;
     static std::mt19937 gen(rd());
     return select_randomly(start, end, gen);
