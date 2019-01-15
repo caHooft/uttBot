@@ -1,5 +1,4 @@
 // utttbot.h
-// Aswin van Woudenberg
 
 #ifndef UTTTBOT_H
 #define UTTTBOT_H

@@ -1,5 +1,4 @@
 // uttt.cpp
-// Aswin van Woudenberg
 
 #include "uttt.h"
 

@@ -1,5 +1,4 @@
 // utttbot.cpp
-// Aswin van Woudenberg
 
 #include "utttbot.h"
 #include <iostream>

@@ -1,5 +1,4 @@
 // uttt.h
-// Aswin van Woudenberg
 
 #ifndef UTTT_H
 #define UTTT_H
