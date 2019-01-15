@@ -36,7 +36,7 @@ void UTTTBot::move(int timeout)
 {
 	// Do something more intelligent here than return a random move
 	std::vector<Move> moves = getMoves(state);
-	std::cout << "place_disc " << *select_randomly(moves.begin(), moves.end()) << std::endl;
+	std::cout << "place_disc " << *select(moves.begin(), moves.end()) << std::endl;
 }
 
 void UTTTBot::update(std::string &key, std::string &value)
