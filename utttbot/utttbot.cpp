@@ -1,52 +1,80 @@
 // utttbot.cpp
 
 #include "utttbot.h"
+
 #include <iostream>
 #include <sstream>
+
 using namespace std;
 
 array<int, 9> scores = { 0,0,0,0,0,0,0,0,0 };
 
-void UTTTBot::run() 
+int getX(int i)
+{
+	if (i < 3)
+		return 0;
+	if (i < 6)
+		return 1;
+	else
+		return 2;
+}
+
+int getY(int i)
+{
+	if (i == 0 || i == 3 || i == 6)
+		return 0;
+	if (i == 1 || i == 4 || i == 7)
+		return 1;
+	else
+		return 2;
+}
+
+void UTTTBot::run()
 {
 	std::string line;
-	while (std::getline(std::cin, line)) 
+
+	while (std::getline(std::cin, line))
 	{
 		std::vector<std::string> command = split(line, ' ');
-		if (command[0] == "settings") 
+
+		if (command[0] == "settings")
 		{
 			setting(command[1], command[2]);
-		} 
-		
-		else if (command[0] == "update" && command[1] == "game") 
+		}
+
+		else if (command[0] == "update" && command[1] == "game")
 		{
 			update(command[2], command[3]);
-		} 
-		
-		else if (command[0] == "action" && command[1] == "move") 
+		}
+
+		else if (command[0] == "action" && command[1] == "move")
 		{
 			move(std::stoi(command[2]));
-		} 
-		
-		else 
+		}
+
+		else
 		{
 			std::cerr << "Unknown command: " << line << std::endl;
 		}
 	}
 }
 
-void UTTTBot::mcUpdateScores(array<int, 9> &subscores, State &trialboard, Player &winner)
+
+void mcUpdateScores(array<int, 9> &subscores, State &trialboard, Player &winner)
 {
 	for (int i = 0; i < 9; i++)
 	{
+		int x = getX(i);
+		int y = getY(i);
+
 		if (winner == Player::X)
 		{
-			if (trialboard[i] == Player::X)
+			if (trialboard.macroboard[x][y] == Player::X)
 			{
 				subscores[i]++;
 			}
 
-			if (trialboard[i] == Player::O)
+			if (trialboard.macroboard[x][y] == Player::O)
 			{
 				subscores[i]--;
 			}
@@ -54,12 +82,12 @@ void UTTTBot::mcUpdateScores(array<int, 9> &subscores, State &trialboard, Player
 
 		if (winner == Player::O)
 		{
-			if (trialboard[i] == Player::X)
+			if (trialboard.macroboard[x][y] == Player::X)
 			{
 				subscores[i]--;
 			}
 
-			if (trialboard[i] == Player::O)
+			if (trialboard.macroboard[x][y] == Player::O)
 			{
 				subscores[i]++;
 			}
@@ -100,19 +128,27 @@ Move UTTTBot::getBestMove(State &board)
 	int highest = -9999;
 	int index = -1;
 
+	int dx, dy;
 	for (int i = 0; i < 9; i++)
 	{
-		if (scores[i] > highest && board[i] == Player::None)
+		int x = getX(i);
+		int y = getY(i);
+
+		if (scores[i] > highest && board.macroboard[x][y] == Player::None)
 		{
 			highest = scores[i];
 			index = i;
+			dx = x;
+			dy = y;
 		}
 	}
 
-	return index;
+	Move wut = { dx, dy };
+
+	return wut;
 }
 
-Move UTTTBot::mcMove(State &board, const Player &player)
+Move UTTTBot::mcMove(State &board)
 {
 	scores = { 0,0,0,0,0,0,0,0,0 };
 
@@ -124,82 +160,61 @@ Move UTTTBot::mcMove(State &board, const Player &player)
 	return getBestMove(board);
 }
 
-
-void UTTTBot::move(int timeout) 
+void UTTTBot::move(int timeout)
 {
 	// Do something more intelligent here than return a random move
-	//std::vector<Move> moves = getMoves(state);
-
-	//std::cout << "place_disc " << mcMove(board), getCurrentPlayer(board) << std::endl;
-	//cout << "place_disc " << board= doMove(board, mcMove(board, getCurrentPlayer(board))), getCurrentPlayer(board) << std::endl;
+	std::vector<Move> moves = getMoves(state);
 	
+	std::cout << "place_disc " << *select(moves.begin(), moves.end()) << std::endl;
+	
+	//Move theMove = mcMove(state);
+	//std::cout << "place_disc " << theMove << std::endl;
 }
 
-void UTTTBot::update(std::string &key, std::string &value)
-{
-	if (key == "round") 
-	{
+void UTTTBot::update(std::string &key, std::string &value) {
+	if (key == "round") {
 		round = std::stoi(value);
-	} else if (key == "field") 
-	{
+	}
+	else if (key == "field") {
 		int row = 0;
 		int col = 0;
 		std::vector<std::string> fields = split(value, ',');
-		for (std::string &field : fields) 
-		{
-			if (field == "0") 
-			{
-				state.board[row][col] = Player::X; 
-			} 
-			
-			else if (field == "1") 
-			{
+		for (std::string &field : fields) {
+			if (field == "0") {
+				state.board[row][col] = Player::X;
+			}
+			else if (field == "1") {
 				state.board[row][col] = Player::O;
-			} 
-			
-			else 
-			{
+			}
+			else {
 				state.board[row][col] = Player::None;
 			}
 			col++;
-			
-			if (col == 9) 
-			{
-				row++; 
+			if (col == 9) {
+				row++;
 				col = 0;
 			}
 		}
-	} else if (key == "macroboard") 
-	{
+	}
+	else if (key == "macroboard") {
 		int row = 0;
 		int col = 0;
 		std::vector<std::string> fields = split(value, ',');
-		for (std::string &field : fields) 
-		{
-			if (field == "-1") 
-			{
+		for (std::string &field : fields) {
+			if (field == "-1") {
 				state.macroboard[row][col] = Player::Active;
-			} 
-			
-			else if (field == "0") 
-			{
+			}
+			else if (field == "0") {
 				state.macroboard[row][col] = Player::X;
-			} 
-			
-			else if (field == "1") 
-			{
+			}
+			else if (field == "1") {
 				state.macroboard[row][col] = Player::O;
-			} 
-			
-			else 
-			{
+			}
+			else {
 				state.macroboard[row][col] = Player::None;
 			}
-
 			col++;
-
-			if (col == 3) 
-			{
+			if (col == 3) {
 				row++;
 				col = 0;
 			}
@@ -208,42 +223,30 @@ void UTTTBot::update(std::string &key, std::string &value)
 }
 
 void UTTTBot::setting(std::string &key, std::string &value) {
-	if (key == "timebank") 
-	{
+	if (key == "timebank") {
 		timebank = std::stoi(value);
-	} 
-	
-	else if (key == "time_per_move") 
-	{
+	}
+	else if (key == "time_per_move") {
 		time_per_move = std::stoi(value);
-	} 
-	
-	else if (key == "player_names") 
-	{
+	}
+	else if (key == "player_names") {
 		std::vector<std::string> names = split(value, ',');
 		player_names[0] = names[0];
 		player_names[1] = names[1];
-	} 
-	
-	else if (key == "your_bot") 
-	{
+	}
+	else if (key == "your_bot") {
 		your_bot = value;
-	} 
-	
-	else if (key == "your_botid") 
-	{
+	}
+	else if (key == "your_botid") {
 		your_botid = std::stoi(value);
 	}
 }
 
-std::vector<std::string> UTTTBot::split(const std::string &s, char delim) 
-{
+std::vector<std::string> UTTTBot::split(const std::string &s, char delim) {
 	std::vector<std::string> elems;
 	std::stringstream ss(s);
 	std::string item;
-
-	while (std::getline(ss, item, delim)) 
-	{
+	while (std::getline(ss, item, delim)) {
 		elems.push_back(item);
 	}
 	return elems;

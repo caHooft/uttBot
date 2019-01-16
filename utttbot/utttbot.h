@@ -22,10 +22,10 @@ class UTTTBot
 	void setting(std::string &key, std::string &value);
 	void update(std::string &key, std::string &value);
 	void move(int timeout);
-	void mcUpdateScores(array<int, 9> &subscores, State &trialboard, Player &winner);
+	//void mcUpdateScores(array<int, 9> &subscores, State &trialboard, Player &winner);
 	State mcTrial(const State &board);
 	Move getBestMove(State &board);
-	Move mcMove(State &board, const Player &player);
+	Move mcMove(State &board);
 public:
 	void run();
 };
