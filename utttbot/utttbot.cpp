@@ -3,6 +3,9 @@
 #include "utttbot.h"
 #include <iostream>
 #include <sstream>
+using namespace std;
+
+array<int, 9> scores = { 0,0,0,0,0,0,0,0,0 };
 
 void UTTTBot::run() 
 {
@@ -32,11 +35,104 @@ void UTTTBot::run()
 	}
 }
 
+void UTTTBot::mcUpdateScores(array<int, 9> &subscores, State &trialboard, Player &winner)
+{
+	for (int i = 0; i < 9; i++)
+	{
+		if (winner == Player::X)
+		{
+			if (trialboard[i] == Player::X)
+			{
+				subscores[i]++;
+			}
+
+			if (trialboard[i] == Player::O)
+			{
+				subscores[i]--;
+			}
+		}
+
+		if (winner == Player::O)
+		{
+			if (trialboard[i] == Player::X)
+			{
+				subscores[i]--;
+			}
+
+			if (trialboard[i] == Player::O)
+			{
+				subscores[i]++;
+			}
+		}
+	}
+
+
+	for (int i = 0; i < 9; i++)
+	{
+		scores[i] = scores[i] + subscores[i];
+	}
+}
+
+State UTTTBot::mcTrial(const State &board)
+{
+	State trialboard = board;
+	array<int, 9> subscores = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	Player winner;
+
+	vector<Move> moves = getMoves(trialboard);
+
+	while (moves.size() != 0)
+	{
+		trialboard = doMove(trialboard, moves[(rand() % moves.size())]);
+		moves = getMoves(trialboard);
+	}
+
+	winner = getWinner(trialboard);
+
+	mcUpdateScores(subscores, trialboard, winner);
+
+
+	return board;
+}
+
+Move UTTTBot::getBestMove(State &board)
+{
+	int highest = -9999;
+	int index = -1;
+
+	for (int i = 0; i < 9; i++)
+	{
+		if (scores[i] > highest && board[i] == Player::None)
+		{
+			highest = scores[i];
+			index = i;
+		}
+	}
+
+	return index;
+}
+
+Move UTTTBot::mcMove(State &board, const Player &player)
+{
+	scores = { 0,0,0,0,0,0,0,0,0 };
+
+	for (int i = 0; i < 20; i++)
+	{
+		board = mcTrial(board);
+	}
+
+	return getBestMove(board);
+}
+
+
 void UTTTBot::move(int timeout) 
 {
 	// Do something more intelligent here than return a random move
-	std::vector<Move> moves = getMoves(state);
-	std::cout << "place_disc " << *select(moves.begin(), moves.end()) << std::endl;
+	//std::vector<Move> moves = getMoves(state);
+
+	//std::cout << "place_disc " << mcMove(board), getCurrentPlayer(board) << std::endl;
+	//cout << "place_disc " << board= doMove(board, mcMove(board, getCurrentPlayer(board))), getCurrentPlayer(board) << std::endl;
+	
 }
 
 void UTTTBot::update(std::string &key, std::string &value)
